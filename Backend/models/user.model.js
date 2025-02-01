@@ -35,7 +35,7 @@ userSchema.methods.comparePassword = async function (inputPassword) {
 
 // Static method to generate auth token
 userSchema.statics.generateAuthToken = function (userId) {
-    return jwt.sign({ _id: userId }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    return jwt.sign({ _id: userId }, process.env.JWT_SECRET, { expiresIn: "10s" });
 };
 
 const User = mongoose.model("User", userSchema);

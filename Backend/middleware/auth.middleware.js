@@ -3,18 +3,17 @@ import { User } from "../models/user.model.js";
 import Captain from "../models/captain.model.js";
 import BlacklistToken from "../models/blacklisttoken.model.js";
 
-
 export const auth = async (req, res, next) => {
     try {
         // Get token from cookies or authorization header
-        const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+        const token = req.cookies?.token || req.headers.authorization?.split(" ")[1];
 
         if (!token) {
             return res.status(401).json({ message: "Unauthorized: No token provided." });
         }
 
         // Check if token is blacklisted
-        const isBlacklisted = await BlacklistToken.findOne({ token });
+        const isBlacklisted = await BlacklistToken.exists({ token });
         if (isBlacklisted) {
             return res.status(401).json({ message: "Unauthorized: Token blacklisted." });
         }
@@ -43,20 +42,17 @@ export const auth = async (req, res, next) => {
     }
 };
 
-
-
-export const capauth=async(req,res,next)=>{
-
+export const capauth = async (req, res, next) => {
     try {
         // Get token from cookies or authorization header
-        const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+        const token = req.cookies?.token || req.headers.authorization?.split(" ")[1];
 
         if (!token) {
             return res.status(401).json({ message: "Unauthorized: No token provided." });
         }
 
         // Check if token is blacklisted
-        const isBlacklisted = await BlacklistToken.findOne({ token });
+        const isBlacklisted = await BlacklistToken.exists({ token });
         if (isBlacklisted) {
             return res.status(401).json({ message: "Unauthorized: Token blacklisted." });
         }
@@ -83,4 +79,4 @@ export const capauth=async(req,res,next)=>{
         }
         return res.status(500).json({ message: "Internal server error." });
     }
-}
+};

@@ -103,13 +103,35 @@ const getuserprofile = async (req, res) => {
 
 
 const logoutuser = async (req, res) => {
-    res.clearCookie("token");
-    const token=req.cookies.token||req.headers.authorization.split(" ")[1];
-    
-    await BlacklistToken.create({ token });
+    try {
+        const token = req.cookies?.token || req.headers.authorization?.split(" ")[1];
 
-    res.status(200).json({ message: "Logout successful." });
-}
+        if (!token) {
+            return res.status(400).json({ message: "No token provided." });
+        }
+
+        const tokenHash = BlacklistToken.hashToken(token);
+        console.log("Hashing and Blacklisting Token:", tokenHash);
+
+        await BlacklistToken.create({ tokenHash });
+
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+        });
+
+        return res.status(200).json({ message: "Logout successful." });
+    } catch (error) {
+        console.error("Logout Error:", error);
+        return res.status(500).json({ message: "Internal Server Error." });
+    }
+};
+
+
+
+
+
 
 
 export { registeruser, loginuser,getuserprofile ,logoutuser}
