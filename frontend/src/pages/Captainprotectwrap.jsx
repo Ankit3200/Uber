@@ -1,19 +1,19 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
+import { captainDatacontext } from '../context/Captaincontext';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 
-const CaptainProtectWrapper = ({ children }) => {
+const Captainprotectedwrapper = ({ children }) => {
+  const { user } = useContext(captainDatacontext); // Get captain data from context
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth);
 
-  React.useEffect(() => {
-    if (!user || user.role !== 'captain') {
-      navigate('/login');
+  useEffect(() => {
+    if (!user && !localStorage.getItem('token')) {
+      navigate('/captain-login'); // Redirect to login if no captain or token
     }
   }, [user, navigate]);
 
-  // Only render children if user exists and is a captain
-  return user && user.role === 'captain' ? children : null;
+  // Only render children if captain is authenticated
+  return user || localStorage.getItem('token') ? <>{children}</> : null;
 };
 
-export default CaptainProtectWrapper;
+export default Captainprotectedwrapper;

@@ -10,30 +10,35 @@ const UserLogout = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
 
-    const logout = async () => {
-      try {
-        if (token) {
-          await axios.post(
-            'http://localhost:5000/captain/logout',
-            {},
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-        }
-      } catch (error) {
-        console.error('Logout request failed:', error);
-      } finally {
-        localStorage.removeItem('token');
-        setUser(null); // Clear user context
-        navigate('/captain-login'); // Redirect after logout
-      }
-    };
+    if (token) {
+      axios
+        .post(
+          'http://localhost:5000/users/logout', // Use POST instead of GET
+          {}, 
+          {
+            withCredentials: true, // Ensure needed only if backend uses cookies
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then(() => {
+          console.log('Logout successful');
+        })
+        .catch((error) => {
+          console.error('Logout request failed:', error);
+        })
+        .finally(() => {
+          // Always clear user session
+          localStorage.removeItem('token');
 
-    logout();
-  }, [navigate, setUser]);
+          setUser(null); // Clear user context
+          navigate('/login'); // Redirect after logout
+        });
+    } else {
+      navigate('/login'); // If no token, just navigate to login page
+    }
+  }, [navigate, setUser]); // Dependencies ensure this runs only once
 
   return <div>Logging out...</div>;
 };

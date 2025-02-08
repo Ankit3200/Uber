@@ -5,10 +5,7 @@ export const UserDatacontext = createContext(); // Correct Export
 function UsercontextProvider({ children }) {  // Clearer naming
   const [user, setUser] = useState({
     email: "",
-    fullname: {
-      firstname: "",
-      lastname: "",
-    },
+    fullname:" ",
   });
 
   return (
